@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 # vim: sts=4 sw=4 et
 # GladeVcp actions
 #
@@ -14,7 +14,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-import os, time
+import os, time, chardet
 
 import gobject, gtk
 
@@ -119,6 +119,8 @@ class EMC_SourceView(gtksourceview.View, _EMC_ActionBase):
     # We set the buffer-unmodified flag false after loading the file.
     # Set the hilight line to the line linuxcnc is looking at.
     # if one calls load_file without a filenname, We reload the exisiting file.
+    
+    spisok = ['1',1,"3"] #### INIT
     def load_file(self, fn=None):
         self.buf.begin_not_undoable_action()
         if fn == None:
@@ -127,7 +129,10 @@ class EMC_SourceView(gtksourceview.View, _EMC_ActionBase):
         if not fn:
             self.buf.set_text('')
             return 
-        self.buf.set_text(open(fn).read())
+        
+	result = chardet.detect(open(fn).read())
+	self.buf.set_text(open(fn).read().decode(result['encoding']))
+
         self.buf.end_not_undoable_action()
         self.buf.set_modified(False)
         self.update_iter()
@@ -135,6 +140,8 @@ class EMC_SourceView(gtksourceview.View, _EMC_ActionBase):
         self.offset = self.gstat.stat.motion_line
         f = file(fn, 'r')
         p = f.readlines()
+	global spisok
+	spisok = p	   
         f.close()
         self.program_length = len(p)
 
@@ -145,6 +152,8 @@ class EMC_SourceView(gtksourceview.View, _EMC_ActionBase):
 
     # This moves the highlight line to a lower numbered line.
     # useful for run-at-line selection
+    def line_get(self,number):
+	return spisok[number]							  					  
     def line_down(self):
         self.offset +=1
         self.check_offset()

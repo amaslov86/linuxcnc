@@ -220,7 +220,7 @@ class SpeedControl(gtk.VBox, _HalSpeedControlBase):
         self.cr.close_path()
 
         # draw the label in the bar
-        self.cr.set_source_rgb(0 ,0 ,0)
+        self.cr.set_source_rgb(1 ,1 ,1)
         self.cr.set_font_size(self._size / 3)
 
         tmpl = lambda s: self._template % s
