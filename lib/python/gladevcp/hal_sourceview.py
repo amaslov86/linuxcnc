@@ -16,7 +16,7 @@
 
 import os, time
 
-import gobject, gtk
+import gobject, gtk, glib, chardet
 
 from hal_widgets import _HalWidgetBase
 import linuxcnc
@@ -126,8 +126,12 @@ class EMC_SourceView(gtksourceview.View, _EMC_ActionBase):
         self.filename = fn
         if not fn:
             self.buf.set_text('')
-            return 
-        self.buf.set_text(open(fn).read())
+            return
+        programm = open(fn).read()
+        encoding=chardet.detect(programm)['encoding']
+        if not encoding == 'utf-8':
+            programm = programm.decode(encoding).encode('utf8')
+        self.buf.set_text(programm)
         self.buf.end_not_undoable_action()
         self.buf.set_modified(False)
         self.update_iter()
